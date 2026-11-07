@@ -1,8 +1,17 @@
-// TASK 3 — Modals, ScrollView and SafeAreaView (starter)
-// Start point: the solution of Task 2 + new data. Follow the steps in README.md.
 import { useState } from 'react';
-// TODO: add the imports you need in each step (Modal, SafeAreaView from 'react-native-safe-area-context'...)
-import { View, Text, Image, Pressable, TextInput, Button, Alert, ScrollView, StyleSheet, Platform } from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  Pressable,
+  TextInput,
+  Button,
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Platform,
+  Modal,
+} from 'react-native';
 
 const COLORS = {
   background: '#EEF1F6',
@@ -42,7 +51,6 @@ const CONTACTS = [
   'Hugo Silva',
 ];
 
-// Adds thousands separators: 1200 -> '1,200'
 function formatCount(n) {
   return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
@@ -54,11 +62,12 @@ export default function App() {
   const [isBioExpanded, setIsBioExpanded] = useState(false);
   const [isOnline, setIsOnline] = useState(true);
   const [selectedSkills, setSelectedSkills] = useState([]);
-  // TODO STEP 1: add the state that says if the modal is visible
-  // TODO STEP 4: add the state for the selected contacts (an array)
+
+  const [modalVisible, setModalVisible] = useState(false);
 
   const followers = BASE_FOLLOWERS + (isFollowing ? 1 : 0);
   const isSendDisabled = message.trim().length === 0;
+
   const stats = [
     { label: 'Projects', value: '24' },
     { label: 'Followers', value: formatCount(followers) },
@@ -73,10 +82,6 @@ export default function App() {
     setIsComposerOpen(!isComposerOpen);
   };
 
-  const handleSharePress = () => {
-    Alert.alert('Share profile', 'Sharing is not implemented yet.');
-  };
-
   const handleSendPress = () => {
     Alert.alert('Message sent', `To Alex: "${message.trim()}"`);
     setMessage('');
@@ -84,7 +89,6 @@ export default function App() {
   };
 
   const handleSkillPress = (skill) => {
-    // Never modify the array directly: create a new one.
     setSelectedSkills(
       selectedSkills.includes(skill)
         ? selectedSkills.filter((item) => item !== skill)
@@ -92,10 +96,6 @@ export default function App() {
     );
   };
 
-  // TODO STEP 2: write closeModal
-  // TODO STEP 4: write handleContactPress and handleConfirmShare
-
-  // TODO STEP 5: wrap the whole screen in a SafeAreaView
   return (
     <ScrollView
       style={styles.screen}
@@ -164,7 +164,6 @@ export default function App() {
             Tap a skill to select it · {selectedSkills.length} selected
           </Text>
 
-          {/* TODO STEP 3: add the 'Recent projects' horizontal ScrollView here (use PROJECTS) */}
           <View style={styles.actions}>
             <Pressable
               onPress={handleFollowPress}
@@ -215,15 +214,33 @@ export default function App() {
             </View>
           )}
 
-
           <View style={styles.shareWrapper}>
-            {/* TODO STEP 1: this button must open the modal (replace the Alert) */}
-            <Button title="Share profile" color={COLORS.primary} onPress={handleSharePress} />
+            <Button
+              title="Share profile"
+              color={COLORS.primary}
+              onPress={() => setModalVisible(true)}
+            />
           </View>
         </View>
       </View>
 
-      {/* TODO STEP 1-4: add the <Modal> here */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert('Modal has been closed.');
+        }}>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+          <View style={{ backgroundColor: 'white', padding: 20 }}>
+            <Text>Hello, I am a Modal!</Text>
+            <Button
+              title="Close Modal"
+              onPress={() => setModalVisible(!modalVisible)}
+            />
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 }
@@ -450,4 +467,5 @@ const styles = StyleSheet.create({
     marginTop: 12,
     alignItems: 'center',
   },
+
 });
