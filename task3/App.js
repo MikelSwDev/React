@@ -65,8 +65,12 @@ export default function App() {
 
   const [modalVisible, setModalVisible] = useState(false);
 
+  const [selectedContacts, setSelectedContacts] = useState([]);
+
   const followers = BASE_FOLLOWERS + (isFollowing ? 1 : 0);
   const isSendDisabled = message.trim().length === 0;
+
+  const isShareDisabled = selectedContacts.length === 0;
 
   const stats = [
     { label: 'Projects', value: '24' },
@@ -98,6 +102,21 @@ export default function App() {
 
   const closeModal = () => {
     setModalVisible(false);
+    setSelectedContacts([]);
+  };
+
+  const handleContactPress = (name) => {
+    setSelectedContacts((prev) =>
+      prev.includes(name)
+        ? prev.filter((item) => item !== name)
+        : [...prev, name]
+    );
+  };
+
+  const handleConfirmShare = () => {
+    const names = selectedContacts.join(', ');
+    Alert.alert('Profile shared', 'Sent to: ' + names);
+    closeModal();
   };
 
   return (
@@ -254,13 +273,49 @@ export default function App() {
 
           <View style={styles.sheet}>
             <Text style={styles.sheetTitle}>Share profile</Text>
-            <Text style={styles.sheetText}>Share Alex's profile with your team.</Text>
+            <Text style={styles.sheetText}>Choose who gets Alex's profile.</Text>
+
+            <ScrollView style={styles.contactList}>
+              {CONTACTS.map((name) => {
+                const isSelected = selectedContacts.includes(name);
+                return (
+                  <Pressable
+                    key={name}
+                    onPress={() => handleContactPress(name)}
+                    style={({ pressed }) => [styles.contactRow, pressed && styles.pressed]}
+                    accessibilityRole="checkbox"
+                    accessibilityState={{ checked: isSelected }}
+                  >
+                    <Text style={styles.contactName}>{name}</Text>
+                    <View style={[styles.checkbox, isSelected && styles.checkboxSelected]}>
+                      {isSelected && <Text style={styles.checkMark}>✓</Text>}
+                    </View>
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
+
+            <Pressable
+              disabled={isShareDisabled}
+              onPress={handleConfirmShare}
+              style={({ pressed }) => [
+                styles.shareButton,
+                isShareDisabled && styles.shareButtonDisabled,
+                pressed && styles.pressed,
+              ]}
+            >
+              <Text style={styles.shareButtonText}>
+                {isShareDisabled
+                  ? 'Select contacts'
+                  : `Share with ${selectedContacts.length}`}
+              </Text>
+            </Pressable>
 
             <Pressable
               onPress={closeModal}
               style={({ pressed }) => [styles.sheetClose, pressed && styles.pressed]}
             >
-              <Text style={styles.sheetCloseText}>Close</Text>
+              <Text style={styles.sheetCloseText}>Cancel</Text>
             </Pressable>
           </View>
         </View>
