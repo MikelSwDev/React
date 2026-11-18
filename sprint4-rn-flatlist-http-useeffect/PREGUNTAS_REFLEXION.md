@@ -2,7 +2,7 @@
 
 _Escribe tus respuestas debajo de cada pregunta._
 
-**Alumno:**
+**Alumno:** Mikel
 
 ---
 
@@ -10,11 +10,11 @@ _Escribe tus respuestas debajo de cada pregunta._
 
 | Pregunta | Mi respuesta |
 |---|---|
-| ¿Cuántos personajes trae cada página? | |
-| ¿Qué campo me dice si existe una página siguiente? | |
-| ¿Qué valor tiene ese campo en la última página? | |
-| ¿Qué código HTTP devuelve una búsqueda sin resultados? | |
-| ¿Qué campos del personaje usa `CharacterCard`? | |
+| ¿Cuántos personajes trae cada página? | 20 (`info.count` es el total y `info.pages` cuántas páginas hay) |
+| ¿Qué campo me dice si existe una página siguiente? | `info.next`: trae la URL de la siguiente página |
+| ¿Qué valor tiene ese campo en la última página? | `null` |
+| ¿Qué código HTTP devuelve una búsqueda sin resultados? | 404, con el cuerpo `{ "error": "There is nothing here" }` |
+| ¿Qué campos del personaje usa `CharacterCard`? | `name`, `status`, `species` e `image` (el `id` lo uso yo como key de la lista) |
 
 ## Paso 2 · Petición HTTP
 
