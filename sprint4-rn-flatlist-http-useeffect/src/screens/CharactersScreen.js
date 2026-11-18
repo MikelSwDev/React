@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { View, Text, FlatList, ActivityIndicator, StyleSheet } from 'react-native';
-import { COLORS } from '../config/constants';
+import { View, Text, TextInput, FlatList, ActivityIndicator, StyleSheet } from 'react-native';
+import { COLORS, DEBOUNCE_MS } from '../config/constants';
 import { getCharacters } from '../services/charactersService';
 import CharacterCard from '../components/CharacterCard';
 import StateMessage from '../components/StateMessage';
@@ -22,27 +22,46 @@ export default function CharactersScreen() {
   const [hasNextPage, setHasNextPage] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [searchText, setSearchText] = useState('');
+  const [query, setQuery] = useState('');
 
   useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setQuery(searchText);
+    }, DEBOUNCE_MS);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchText]);
+
+  useEffect(() => {
+    let ignore = false;
+
     async function loadFirstPage() {
       console.log('Cargando personajes...');
       setLoading(true);
       setError(null);
       try {
-        const data = await getCharacters({ page: 1 });
+        const data = await getCharacters({ page: 1, name: query });
+        if (ignore) return;
         console.log('Personajes recibidos:', data.results.length);
         setCharacters(data.results);
         setPage(1);
         setHasNextPage(data.hasNextPage);
       } catch (err) {
+        if (ignore) return;
+        setCharacters([]);
         setError(err.message);
       } finally {
-        setLoading(false);
+        if (!ignore) setLoading(false);
       }
     }
 
     loadFirstPage();
-  }, [reloadKey]);
+
+    return () => {
+      ignore = true;
+    };
+  }, [reloadKey, query]);
 
   function handleRetry() {
     setReloadKey((key) => key + 1);
@@ -56,7 +75,7 @@ export default function CharactersScreen() {
     setError(null);
     try {
       const nextPage = page + 1;
-      const data = await getCharacters({ page: nextPage });
+      const data = await getCharacters({ page: nextPage, name: query });
       setCharacters((prev) => [...prev, ...data.results]);
       setPage(nextPage);
       setHasNextPage(data.hasNextPage);
@@ -71,7 +90,7 @@ export default function CharactersScreen() {
     setRefreshing(true);
     setError(null);
     try {
-      const data = await getCharacters({ page: 1 });
+      const data = await getCharacters({ page: 1, name: query });
       setCharacters(data.results);
       setPage(1);
       setHasNextPage(data.hasNextPage);
@@ -111,6 +130,7 @@ export default function CharactersScreen() {
         ListFooterComponent={renderFooter()}
         refreshing={refreshing}
         onRefresh={handleRefresh}
+        keyboardShouldPersistTaps="handled"
       />
     );
   }
@@ -118,6 +138,16 @@ export default function CharactersScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Rick and Morty</Text>
+
+      <TextInput
+        style={styles.input}
+        placeholder="Buscar por nombre..."
+        placeholderTextColor={COLORS.textMuted}
+        value={searchText}
+        onChangeText={setSearchText}
+        autoCorrect={false}
+        autoCapitalize="none"
+      />
 
       {content}
     </View>
