@@ -5,6 +5,14 @@ import { getCharacters } from '../services/charactersService';
 import CharacterCard from '../components/CharacterCard';
 import StateMessage from '../components/StateMessage';
 
+function Separator() {
+  return <View style={styles.separator} />;
+}
+
+function EmptyList() {
+  return <StateMessage message="No hay personajes que mostrar." />;
+}
+
 export default function CharactersScreen() {
   const [characters, setCharacters] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -46,6 +54,8 @@ export default function CharactersScreen() {
         renderItem={({ item }) => <CharacterCard character={item} />}
         keyExtractor={(item) => String(item.id)}
         contentContainerStyle={styles.listContent}
+        ItemSeparatorComponent={Separator}
+        ListEmptyComponent={EmptyList}
       />
     );
   }
