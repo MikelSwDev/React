@@ -88,4 +88,5 @@ _Escribe tus respuestas debajo de cada pregunta._
 
 **Menciona dos mejoras que le harías a la app si tuvieras una hora más:**
 
-> 
+> 1. Cancelar de verdad las peticiones viejas con `AbortController` en lugar de solo ignorar sus respuestas, para no gastar red (reto A).
+> 2. Una pantalla de detalle al tocar una tarjeta, pidiendo `/character/{id}` (reto D).

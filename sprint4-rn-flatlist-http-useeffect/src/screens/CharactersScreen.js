@@ -37,13 +37,11 @@ export default function CharactersScreen() {
     let ignore = false;
 
     async function loadFirstPage() {
-      console.log('Cargando personajes...');
       setLoading(true);
       setError(null);
       try {
         const data = await getCharacters({ page: 1, name: query });
         if (ignore) return;
-        console.log('Personajes recibidos:', data.results.length);
         setCharacters(data.results);
         setPage(1);
         setHasNextPage(data.hasNextPage);
@@ -69,7 +67,6 @@ export default function CharactersScreen() {
 
   async function loadMore() {
     if (loading || loadingMore || refreshing || !hasNextPage) return;
-    console.log('Cargando página', page + 1);
 
     setLoadingMore(true);
     setError(null);
@@ -177,5 +174,4 @@ const styles = StyleSheet.create({
   listContent: { paddingBottom: 24 },
   footer: { marginVertical: 16 },
   footerError: { color: COLORS.danger, textAlign: 'center', marginVertical: 16 },
-  placeholder: { color: COLORS.textMuted, fontSize: 16, marginTop: 24 },
 });
