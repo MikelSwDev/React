@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, FlatList, StyleSheet } from 'react-native';
 import { COLORS } from '../config/constants';
 import { getCharacters } from '../services/charactersService';
+import CharacterCard from '../components/CharacterCard';
 
 export default function CharactersScreen() {
   const [characters, setCharacters] = useState([]);
@@ -29,7 +30,12 @@ export default function CharactersScreen() {
     <View style={styles.container}>
       <Text style={styles.title}>Rick and Morty</Text>
 
-      <Text style={styles.placeholder}>Aquí aparecerá la lista de personajes.</Text>
+      <FlatList
+        data={characters}
+        renderItem={({ item }) => <CharacterCard character={item} />}
+        keyExtractor={(item) => String(item.id)}
+        contentContainerStyle={styles.listContent}
+      />
     </View>
   );
 }
