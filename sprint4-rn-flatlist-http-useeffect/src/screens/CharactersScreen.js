@@ -18,6 +18,9 @@ export default function CharactersScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [reloadKey, setReloadKey] = useState(0);
+  const [page, setPage] = useState(1);
+  const [hasNextPage, setHasNextPage] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   useEffect(() => {
     async function loadFirstPage() {
@@ -28,6 +31,8 @@ export default function CharactersScreen() {
         const data = await getCharacters({ page: 1 });
         console.log('Personajes recibidos:', data.results.length);
         setCharacters(data.results);
+        setPage(1);
+        setHasNextPage(data.hasNextPage);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -40,6 +45,35 @@ export default function CharactersScreen() {
 
   function handleRetry() {
     setReloadKey((key) => key + 1);
+  }
+
+  async function loadMore() {
+    if (loading || loadingMore || !hasNextPage) return;
+    console.log('Cargando página', page + 1);
+
+    setLoadingMore(true);
+    setError(null);
+    try {
+      const nextPage = page + 1;
+      const data = await getCharacters({ page: nextPage });
+      setCharacters((prev) => [...prev, ...data.results]);
+      setPage(nextPage);
+      setHasNextPage(data.hasNextPage);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoadingMore(false);
+    }
+  }
+
+  function renderFooter() {
+    if (loadingMore) {
+      return <ActivityIndicator style={styles.footer} color={COLORS.primary} />;
+    }
+    if (error && characters.length > 0) {
+      return <Text style={styles.footerError}>{error}</Text>;
+    }
+    return null;
   }
 
   let content;
@@ -56,6 +90,9 @@ export default function CharactersScreen() {
         contentContainerStyle={styles.listContent}
         ItemSeparatorComponent={Separator}
         ListEmptyComponent={EmptyList}
+        onEndReached={loadMore}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={renderFooter()}
       />
     );
   }

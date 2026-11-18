@@ -62,7 +62,7 @@ _Escribe tus respuestas debajo de cada pregunta._
 
 **¿Qué problema aparece si la función de "cargar más" se dispara varias veces seguidas? ¿Cómo lo evité?**
 
-> 
+> `onEndReached` se puede disparar varias veces seguidas mientras sigo cerca del final, antes de que llegue la primera respuesta. Eso pediría la misma página varias veces y se duplicarían personajes (y saldría la advertencia de keys duplicadas). Lo evité con una condición al inicio de `loadMore`: si ya está cargando más, si está la carga inicial, si se está actualizando o si ya no hay página siguiente, la función se sale sin hacer nada.
 
 ## Paso 9 · Pull to refresh
 
