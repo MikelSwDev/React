@@ -68,7 +68,7 @@ _Escribe tus respuestas debajo de cada pregunta._
 
 **¿Por qué usé un estado distinto (`refreshing`) y no el mismo de la carga inicial?**
 
-> 
+> Porque son dos cosas distintas para el usuario. En la carga inicial no hay nada que mostrar, así que cambio la lista por un spinner grande. En el refresh ya hay una lista y quiero que se quede visible mientras arriba aparece el indicador nativo del gesto; además, `refreshing` es justo la prop que `FlatList` usa para controlar ese indicador. Si usara el mismo `loading`, al jalar se borraría la lista y aparecería el spinner de pantalla completa.
 
 ## Paso 10 · Búsqueda
 

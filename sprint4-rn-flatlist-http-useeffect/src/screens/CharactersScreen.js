@@ -21,6 +21,7 @@ export default function CharactersScreen() {
   const [page, setPage] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     async function loadFirstPage() {
@@ -48,7 +49,7 @@ export default function CharactersScreen() {
   }
 
   async function loadMore() {
-    if (loading || loadingMore || !hasNextPage) return;
+    if (loading || loadingMore || refreshing || !hasNextPage) return;
     console.log('Cargando página', page + 1);
 
     setLoadingMore(true);
@@ -63,6 +64,21 @@ export default function CharactersScreen() {
       setError(err.message);
     } finally {
       setLoadingMore(false);
+    }
+  }
+
+  async function handleRefresh() {
+    setRefreshing(true);
+    setError(null);
+    try {
+      const data = await getCharacters({ page: 1 });
+      setCharacters(data.results);
+      setPage(1);
+      setHasNextPage(data.hasNextPage);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setRefreshing(false);
     }
   }
 
@@ -93,6 +109,8 @@ export default function CharactersScreen() {
         onEndReached={loadMore}
         onEndReachedThreshold={0.5}
         ListFooterComponent={renderFooter()}
+        refreshing={refreshing}
+        onRefresh={handleRefresh}
       />
     );
   }
