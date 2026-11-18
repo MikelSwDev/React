@@ -1,17 +1,21 @@
 import { useState, useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, StyleSheet } from 'react-native';
 import { COLORS } from '../config/constants';
 import { getCharacters } from '../services/charactersService';
 import CharacterCard from '../components/CharacterCard';
+import StateMessage from '../components/StateMessage';
 
 export default function CharactersScreen() {
   const [characters, setCharacters] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     async function loadFirstPage() {
       console.log('Cargando personajes...');
+      setLoading(true);
+      setError(null);
       try {
         const data = await getCharacters({ page: 1 });
         console.log('Personajes recibidos:', data.results.length);
@@ -24,18 +28,33 @@ export default function CharactersScreen() {
     }
 
     loadFirstPage();
-  }, []);
+  }, [reloadKey]);
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Rick and Morty</Text>
+  function handleRetry() {
+    setReloadKey((key) => key + 1);
+  }
 
+  let content;
+  if (loading) {
+    content = <ActivityIndicator style={styles.loader} size="large" color={COLORS.primary} />;
+  } else if (error && characters.length === 0) {
+    content = <StateMessage message={error} actionLabel="Reintentar" onAction={handleRetry} />;
+  } else {
+    content = (
       <FlatList
         data={characters}
         renderItem={({ item }) => <CharacterCard character={item} />}
         keyExtractor={(item) => String(item.id)}
         contentContainerStyle={styles.listContent}
       />
+    );
+  }
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Rick and Morty</Text>
+
+      {content}
     </View>
   );
 }
