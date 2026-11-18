@@ -32,15 +32,15 @@ _Escribe tus respuestas debajo de cada pregunta._
 
 1. **¿Qué pasa si omito por completo el arreglo de dependencias?**
 
-> 
+> El efecto se ejecuta después de cada render. Como mi efecto actualiza estado, eso provoca otro render, que vuelve a correr el efecto, que vuelve a pedir datos... y queda un bucle infinito de peticiones.
 
 2. **¿Qué significa dejar el arreglo vacío?**
 
-> 
+> Que el efecto no depende de nada que pueda cambiar, entonces solo se ejecuta una vez, después del primer render (cuando la pantalla se monta). Es justo lo que quiero para la carga inicial.
 
 3. **¿Por qué la función que recibe `useEffect` no debe ser `async` directamente?**
 
-> 
+> Una función `async` siempre regresa una promesa, y React espera que el efecto regrese nada o una función de limpieza. Una promesa no sirve como limpieza (y React avisa con una advertencia). Por eso defino una función `async` adentro del efecto y la llamo ahí mismo.
 
 ## Paso 5 · FlatList
 

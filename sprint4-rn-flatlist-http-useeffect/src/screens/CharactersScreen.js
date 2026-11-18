@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { COLORS } from '../config/constants';
 import { getCharacters } from '../services/charactersService';
@@ -7,6 +7,23 @@ export default function CharactersScreen() {
   const [characters, setCharacters] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    async function loadFirstPage() {
+      console.log('Cargando personajes...');
+      try {
+        const data = await getCharacters({ page: 1 });
+        console.log('Personajes recibidos:', data.results.length);
+        setCharacters(data.results);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadFirstPage();
+  }, []);
 
   return (
     <View style={styles.container}>
