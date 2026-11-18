@@ -26,7 +26,7 @@ _Escribe tus respuestas debajo de cada pregunta._
 
 **¿Por qué guardo los personajes en estado y no en una variable normal?**
 
-> 
+> Si fuera una variable normal, React no se entera cuando le asigno los personajes, entonces no vuelve a dibujar la pantalla. Además, la función del componente se vuelve a ejecutar en cada render y la variable se reiniciaría. Con `useState` el valor sobrevive entre renders, y al llamar al setter React vuelve a renderizar con los datos nuevos.
 
 ## Paso 4 · useEffect
 
